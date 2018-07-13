@@ -1,25 +1,30 @@
-def nowDate = new Date()
-def nowFormattedDate = nowDate.format("yyyy-MM-dd/HH:mm:ss")
-def vendorName = "greetgo!"
+buildscript {
+  repositories {
+    mavenLocal()
+    if (System.getenv('GG_REPO')?.trim()) maven { url System.getenv('GG_REPO') }
+    mavenCentral()
+  }
+  dependencies {
+    classpath "kz.greetgo.plugins:greetgo.gradle.plugins:0.0.5"
+  }
+}
 
 apply plugin: 'java'
 apply plugin: 'idea'
-apply plugin: 'eclipse'
 apply plugin: 'maven'
+//noinspection UnnecessaryQualifiedReference
+apply plugin: kz.greetgo.gradle.plugins.MavenUploadPlugin
 
 version = '0.0.1'
 
-sourceCompatibility = 1.7
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
 
 group = "kz.greetgo.class_scanner"
 
-eclipse.project.natures 'org.springsource.ide.eclipse.gradle.core.nature'
-
 repositories {
   mavenLocal()
-  if (System.getenv('GG_REPO') != null && System.getenv('GG_REPO').length() > 0) {
-    maven { url System.getenv('GG_REPO') }
-  }
+  if (System.getenv('GG_REPO')?.trim()) maven { url System.getenv('GG_REPO') }
   mavenCentral()
 }
 
@@ -30,66 +35,52 @@ dependencies {
   testCompile 'org.easytesting:fest-assert-core:2.0M10'
 }
 
-compileJava {
-  options.encoding = "UTF-8"
-}
-compileTestJava {
-  options.encoding = "UTF-8"
+uploadToMavenCentral {
+  description = "Very simple class scanner"
+  url = 'https://github.com/greetgo/greetgo.class_scanner'
+  scm.url = 'https://github.com/greetgo/greetgo.class_scanner.git'
+  developer {
+    id = 'pompei'
+    name = 'Evgeniy Kolpakov'
+    email = 'ekolpakov@greet-go.com'
+  }
 }
 
-project.eclipse.classpath.file.whenMerged { cp ->
-  if (project.hasProperty("sourceCompatibility")) {
-    cp.entries.findAll { it.path.contains('JRE_CONTAINER') }.each {
-      it.path += "/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/" +
-          "JavaSE-$project.sourceCompatibility"
-    }
-  }
+tasks.withType(Javadoc) {
+  options.addStringOption('Xdoclint:none', '-quiet')
+  options.addStringOption('encoding', 'UTF-8')
+  options.addStringOption('charSet', 'UTF-8')
+}
+
+test.useTestNG()
+
+idea.module.inheritOutputDirs = false
+idea.module.outputDir = file("$buildDir/classes/main/")
+idea.module.testOutputDir = file("$buildDir/classes/test/")
+
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+[compileJava, compileTestJava]*.options*.debugOptions*.debugLevel = "source,lines,vars"
+
+sourceSets.main.java.srcDirs = ["src"]
+sourceSets.test.java.srcDirs = ["test_src"]
+sourceSets.main.resources.srcDirs = ["src_resources"]
+sourceSets.test.resources.srcDirs = ["test_resources"]
+
+sourceSets.main.resources {
+  srcDirs += sourceSets.main.java.srcDirs
+  exclude '**/*.java'
+}
+sourceSets.test.resources {
+  srcDirs += sourceSets.test.java.srcDirs
+  exclude '**/*.java'
 }
 
 jar {
   manifest {
-    attributes 'Implementation-Title': project.name,
-        'Implementation-Version': version, 'Implementation-Vendor': vendorName,
-        'Built-By': System.getProperty("user.name"), 'Built-At': nowFormattedDate
-  }
-}
-
-sourceSets {
-  main {
-    java.srcDirs = ["src", "src_resources"]
-    resources.srcDirs = ["src", "src_resources"]
-  }
-  test {
-    java.srcDirs = ["test_src", "test_src_resources"]
-    resources.srcDirs = ["test_src", "test_src_resources"]
-  }
-}
-
-test { useTestNG() }
-
-task javadocJar(type: Jar, dependsOn: 'javadoc') {
-  from javadoc.destinationDir
-  classifier = 'javadoc'
-}
-
-task sourcesJar(type: Jar) {
-  from sourceSets.main.allSource
-  classifier = 'sources'
-}
-
-artifacts {
-  archives javadocJar
-  archives sourcesJar
-}
-
-uploadArchives {
-  repositories.mavenDeployer {
-    configuration = configurations.archives
-    repository(url: System.getenv('GG_REPO'))
-
-    pom.project {
-      name project.name
-      packaging 'jar'
-    }
+    attributes 'Implementation-Title': project.name
+    attributes 'Implementation-Version': version
+    attributes 'Implementation-Vendor': "greetgo!"
+    attributes 'Created-By': System.getProperty("user.name")
+    attributes 'Created-At': new Date().format("yyyy-MM-dd/HH:mm:ss")
   }
 }
