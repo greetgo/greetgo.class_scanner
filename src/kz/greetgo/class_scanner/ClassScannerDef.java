@@ -5,7 +5,7 @@ import com.metapossum.utils.scanner.reflect.ClassesInPackageScanner;
 import java.util.Set;
 
 /**
- * Реализация сканера по умолчанию
+ * Default scanner implementation
  *
  * @author pompei
  */

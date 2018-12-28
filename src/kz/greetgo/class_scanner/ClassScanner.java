@@ -3,17 +3,16 @@ package kz.greetgo.class_scanner;
 import java.util.Set;
 
 /**
- * Сканер пакетов для загрузки классов
- * 
+ * Package class scanner
+ *
  * @author pompei
  */
 public interface ClassScanner {
   /**
-   * Сканирует пакет, и возвращает список полученных, при этом, классов
-   * 
-   * @param packageName
-   *          сканируемый пакет
-   * @return список отсканированных классов
+   * Scans package and returns set of scanned classes
+   *
+   * @param packageName scanning package name
+   * @return a set of scanned classes
    */
   Set<Class<?>> scanPackage(String packageName);
 }
