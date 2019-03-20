@@ -10,21 +10,18 @@ import java.util.Set;
 public interface ClassScanner {
 
   /**
+   * Adds class loader for scanning in
+   *
+   * @param classLoader class loader
+   */
+  void addClassLoader(ClassLoader classLoader);
+
+  /**
    * Scans package and returns set of scanned classes
    *
    * @param packageName scanning package name
    * @return a set of scanned classes
    */
   Set<Class<?>> scanPackage(String packageName);
-
-
-  /**
-   * Scans package using specified class loader and returns set of scanned classes
-   *
-   * @param packageName scanning package name
-   * @param classLoader class loader to scan classes
-   * @return a set of scanned classes
-   */
-  Set<Class<?>> scanPackage(String packageName, ClassLoader classLoader);
 
 }

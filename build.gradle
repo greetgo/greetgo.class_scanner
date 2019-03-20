@@ -15,7 +15,7 @@ apply plugin: 'maven'
 //noinspection UnnecessaryQualifiedReference
 apply plugin: kz.greetgo.gradle.plugins.MavenUploadPlugin
 
-version = '2.0.2'
+version = '2.0.3'
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
@@ -29,8 +29,6 @@ repositories {
 }
 
 dependencies {
-  compile 'com.metapossum:metapossum-scanner:1.0.1'
-
   testCompile 'org.testng:testng:6.5.1'
   testCompile 'org.easytesting:fest-assert-core:2.0M10'
 }
