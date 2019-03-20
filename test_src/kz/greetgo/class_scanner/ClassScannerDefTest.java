@@ -11,9 +11,15 @@ public class ClassScannerDefTest {
   public void scanPackage_myPackage() {
     ClassScannerDef classScanner = new ClassScannerDef();
 
-    Set<Class<?>> classes = classScanner.scanPackage("kz.greetgo.class_scanner");
+    Set<Class<?>> classes = classScanner.scanPackage(ACoolClass.class.getPackage().getName());
 
     assertThat(classes).isNotEmpty();
+
+    for (Class<?> aClass : classes) {
+      System.out.println(aClass);
+    }
+
+    assertThat(classes).contains(ACoolClass.class);
   }
 
   @Test(expectedExceptions = IllegalArgumentException.class)

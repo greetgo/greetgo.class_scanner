@@ -8,6 +8,7 @@ import java.util.Set;
  * @author pompei
  */
 public interface ClassScanner {
+
   /**
    * Scans package and returns set of scanned classes
    *
@@ -15,4 +16,15 @@ public interface ClassScanner {
    * @return a set of scanned classes
    */
   Set<Class<?>> scanPackage(String packageName);
+
+
+  /**
+   * Scans package using specified class loader and returns set of scanned classes
+   *
+   * @param packageName scanning package name
+   * @param classLoader class loader to scan classes
+   * @return a set of scanned classes
+   */
+  Set<Class<?>> scanPackage(String packageName, ClassLoader classLoader);
+
 }
