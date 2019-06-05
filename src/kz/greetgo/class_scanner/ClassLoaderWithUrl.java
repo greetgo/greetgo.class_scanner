@@ -2,6 +2,8 @@ package kz.greetgo.class_scanner;
 
 import java.io.File;
 import java.net.URL;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Stream;
@@ -37,13 +39,13 @@ public class ClassLoaderWithUrl {
 
   private Stream<Class<?>> fileToClasses() {
 
-    String packagePath = String.join("/", packageName.split("\\."));
+    Path packagePath = Paths.get(String.join(File.separator, packageName.split("\\.")));
 
-    String baseDir = url.getFile();
+    Path baseDir = Paths.get(url.getFile());
 
 //    System.out.println("h2b4hb25 :: FILE " + baseDir + " - packagePath - " + packagePath);
 
-    List<File> fileList = scanRecursively(new File(baseDir));
+    List<File> fileList = scanRecursively(baseDir.toFile());
 
     List<Class<?>> ret = new ArrayList<>();
 
@@ -51,19 +53,13 @@ public class ClassLoaderWithUrl {
 
       String filePath = file.getPath();
 
-      if (!filePath.endsWith(".class")) {
+      if (!filePath.toLowerCase().endsWith(".class")) {
         continue;
       }
 
-      if (!filePath.startsWith(baseDir)) {
-        continue;
-      }
+      Path classPath = packagePath.resolve(baseDir.relativize(file.toPath()));
 
-//      System.out.println("    k5m43m5 :: filePath = " + filePath);
-
-      String classPath = packagePath + filePath.substring(baseDir.length());
-
-      String className = classPath.replace('/', '.');
+      String className = classPath.toString().replace(File.separatorChar, '.');
       className = className.substring(0, className.length() - ".class".length());
 
       try {
