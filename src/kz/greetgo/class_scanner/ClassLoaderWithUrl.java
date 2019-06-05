@@ -41,7 +41,13 @@ public class ClassLoaderWithUrl {
 
     Path packagePath = Paths.get(String.join(File.separator, packageName.split("\\.")));
 
-    Path baseDir = Paths.get(url.getFile());
+    String urlFile = url.getFile();
+
+    if (urlFile.toLowerCase().matches("/\\w:.*")) {
+      urlFile = urlFile.substring(1);
+    }
+
+    Path baseDir = Paths.get(urlFile);
 
 //    System.out.println("h2b4hb25 :: FILE " + baseDir + " - packagePath - " + packagePath);
 
